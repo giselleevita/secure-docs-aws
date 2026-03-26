@@ -112,7 +112,3 @@ resource "aws_lambda_permission" "delete_file" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_apigatewayv2_api.this.execution_arn}/*/*"
 }
-
-output "api_endpoint_url" {
-  value = aws_apigatewayv2_stage.default.invoke_url
-}
