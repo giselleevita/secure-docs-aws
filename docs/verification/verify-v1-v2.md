@@ -5,7 +5,7 @@ Tests for the original SecureDocs functionality: user authentication, file opera
 ## Prerequisites
 
 - AWS account with SecureDocs deployed (`terraform apply` completed)
-- AWS CLI configured with credentials  
+- AWS CLI configured with credentials
 - `curl`, `jq` installed
 
 ## Steps
