@@ -1,0 +1,17 @@
+# Terraform state and local plugins
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+*.tfvars
+
+# Local environment and secrets
+.env
+.env.*
+credentials.json
+
+# Test scripts with hardcoded credentials (kept local only)
+test_secure_docs.sh
+verify_secure_docs.sh
+
+# macOS
+.DS_Store
