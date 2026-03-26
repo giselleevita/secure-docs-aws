@@ -48,4 +48,4 @@ This is a roadmap, not a checkbox.
 
 ## License / Credits
 
-MIT-licensed, contributions welcome.
+Licensed under the MIT License.
