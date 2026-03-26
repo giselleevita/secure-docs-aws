@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lightweight Python tooling
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.7
+
+      - name: Terraform format check
+        run: terraform -chdir=infra/environments/dev fmt -check -recursive
+
+      - name: Terraform init (no backend)
+        run: terraform -chdir=infra/environments/dev init -backend=false
+
+      - name: Terraform validate
+        run: terraform -chdir=infra/environments/dev validate
+
+      - name: Secrets and hygiene check
+        run: sh scripts/security/check_secrets.sh
+
+      - name: Python lint/format (lightweight)
+        run: |
+          if [ -d app ]; then
+            python -m black --check app
+            python -m flake8 app
+          fi

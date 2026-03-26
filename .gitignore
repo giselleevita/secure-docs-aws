@@ -8,6 +8,7 @@ terraform.tfstate.backup
 .env
 .env.*
 credentials.json
+*.zip
 
 # Test scripts with hardcoded credentials (kept local only)
 test_secure_docs.sh

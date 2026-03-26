@@ -27,7 +27,7 @@ aws wafv2 list-resources-for-web-acl \
 ```bash
 # Simulate rate limit breach (5000 requests in batches)
 API_ENDPOINT=$(terraform -chdir=infra/environments/dev output -raw api_endpoint_url)
-for i in {1..5000}; do 
+for i in {1..5000}; do
   curl -s -o /dev/null -w "%{http_code}\n" "$API_ENDPOINT/list" -H "Authorization: Bearer dummy" &
   [ $((i % 100)) -eq 0 ] && wait
 done
@@ -113,6 +113,7 @@ aws ec2 describe-security-groups --group-ids "$SG_ID" --query 'SecurityGroups[0]
 ```
 
 **Expected:** Egress rules show only:
+
 - Port 443 (HTTPS) to CIDR 10.0.0.0/16 (internal VPC)
 - Port 53 (DNS) to CIDR 10.0.0.0/16 (internal VPC)
 - No rules with 0.0.0.0/0 (internet) or ::/0
