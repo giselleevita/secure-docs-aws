@@ -24,7 +24,7 @@ Access is split across dedicated IAM roles for upload, read, and delete operatio
 - IAM permissions are split by Lambda function so upload, read, and delete paths do not share a broad role.
 - Presigned URLs are short-lived at 5 minutes and no direct S3 keys are exposed to clients.
 - CloudTrail and CloudWatch Logs provide audit visibility across API, Lambda, and storage activity.
-- The repository includes a testable threat model and documented security decisions in [docs/04-security-decisions.md](docs/04-security-decisions.md).
+- The repository includes a testable threat model and documented security decisions in [docs/security/security-decisions.md](docs/security/security-decisions.md).
 
 ## How to Run
 
