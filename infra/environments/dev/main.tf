@@ -38,3 +38,24 @@ module "lambda_roles" {
   kms_key_arn      = module.storage.kms_key_arn
   users_table_name = module.dynamodb.table_name
 }
+
+# Root module outputs - aggregate key infrastructure values
+output "bucket_name" {
+  description = "S3 bucket for storing secure documents"
+  value       = module.storage.bucket_name
+}
+
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID for authentication"
+  value       = module.cognito.user_pool_id
+}
+
+output "cognito_app_client_id" {
+  description = "Cognito App Client ID for API calls"
+  value       = module.cognito.user_pool_client_id
+}
+
+output "api_endpoint_url" {
+  description = "HTTP API Gateway endpoint for document operations"
+  value       = aws_apigatewayv2_api.this.api_endpoint
+}
