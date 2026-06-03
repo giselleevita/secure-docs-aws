@@ -44,5 +44,5 @@ jobs:
         run: |
           if [ -d app ]; then
             python -m black --check app
-            python -m flake8 app
+            python -m flake8 --max-line-length=99 app
           fi
