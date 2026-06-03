@@ -28,16 +28,16 @@ def handler(event, context):
     logger.info("action=list_files owner_id=%s status=querying", owner_id)
 
     table = dynamodb.Table(TABLE_NAME)
-    response = table.query(
-        KeyConditionExpression=Key("owner_id").eq(owner_id)
-    )
+    response = table.query(KeyConditionExpression=Key("owner_id").eq(owner_id))
 
     items = [
         {"file_id": item["object_key"], "file_name": item.get("file_name")}
         for item in response.get("Items", [])
     ]
 
-    logger.info("action=list_files owner_id=%s status=ok count=%d", owner_id, len(items))
+    logger.info(
+        "action=list_files owner_id=%s status=ok count=%d", owner_id, len(items)
+    )
 
     return {
         "statusCode": 200,
