@@ -1,0 +1,53 @@
+# V3 Production Layer — Lambda VPC Integration
+# 
+# Add the following subnet_ids and security_groups parameters to each
+# aws_lambda_function resource in lambda.tf to place functions in the VPC:
+#
+# Example patch for lambda.tf:
+#
+# resource "aws_lambda_function" "upload_presigned" {
+#   # ... existing configuration ...
+#   vpc_config {
+#     subnet_ids         = [aws_subnet.lambda_1.id, aws_subnet.lambda_2.id]
+#     security_group_ids = [aws_security_group.lambda.id]
+#   }
+# }
+#
+# resource "aws_lambda_function" "list_files" {
+#   # ... existing configuration ...
+#   vpc_config {
+#     subnet_ids         = [aws_subnet.lambda_1.id, aws_subnet.lambda_2.id]
+#     security_group_ids = [aws_security_group.lambda.id]
+#   }
+# }
+#
+# resource "aws_lambda_function" "download_file" {
+#   # ... existing configuration ...
+#   vpc_config {
+#     subnet_ids         = [aws_subnet.lambda_1.id, aws_subnet.lambda_2.id]
+#     security_group_ids = [aws_security_group.lambda.id]
+#   }
+# }
+#
+# resource "aws_lambda_function" "delete_file" {
+#   # ... existing configuration ...
+#   vpc_config {
+#     subnet_ids         = [aws_subnet.lambda_1.id, aws_subnet.lambda_2.id]
+#     security_group_ids = [aws_security_group.lambda.id]
+#   }
+# }
+#
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# The vpc_config placement allows Lambda to:
+# - Access VPC endpoints for S3, DynamoDB, KMS, CloudWatch Logs, STS, Secrets Manager
+# - Remain completely private (no internet connectivity)
+# - Route all AWS API calls through the VPC endpoint security group
+#
+# Impact on cold start:
+# - First invocation: +100-300ms (ENI attachment)
+# - Subsequent calls: negligible latency increase
+#
+# Monitoring:
+# - Check VPC Flow Logs in CloudWatch: /aws/vpc/secure-docs-flow-logs
+# - Verify endpoint traffic in VPC Endpoint metrics (CloudWatch)
