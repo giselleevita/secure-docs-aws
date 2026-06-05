@@ -1,138 +1,132 @@
 # SecureDocs AWS Infrastructure Validation
 
-**Date:** 2024  
-**Status:** ✅ All deployed and verified
+This document is a sanitized validation example. It records the security checks that should be performed after deployment without publishing live account IDs, resource IDs, ARNs, endpoints, or client identifiers.
 
 ## Infrastructure Outputs
 
 ```json
 {
-  "api_endpoint_url": "https://ymbafxb8rf.execute-api.eu-north-1.amazonaws.com",
-  "bucket_name": "secure-docs-dev-075237969240",
-  "cognito_user_pool_id": "eu-north-1_p8Tddx1DX",
-  "cognito_app_client_id": "5j4ho5dj6tqh6rk1bja5ive7rp"
+  "api_endpoint_url": "https://<api_id>.execute-api.<region>.amazonaws.com",
+  "bucket_name": "secure-docs-dev-<account_id>",
+  "cognito_user_pool_id": "<region>_<user_pool_id>",
+  "cognito_app_client_id": "<app_client_id>"
 }
 ```
 
 ## Security Controls Validation
 
-### 1. S3 Storage Layer ✅
+### 1. S3 Storage Layer
 
-- **Encryption:** AWS KMS (Customer-managed key)
+- **Encryption:** AWS KMS customer-managed key
 - **Bucket Key:** Enabled for optimized encryption
-- **Key ARN:** `arn:aws:kms:eu-north-1:075237969240:key/2aa91678-d74a-4b4d-987e-8d59c096e6f4`
-- **Versioning:** Enabled on `secure-docs-dev-075237969240`
-- **Public Access:** All block settings enabled (verified via AWS CLI)
+- **Key ARN:** `arn:aws:kms:<region>:<account_id>:key/<key_id>`
+- **Versioning:** Enabled on the SecureDocs bucket
+- **Public Access:** All S3 block public access settings enabled
 
-### 2. Authentication & Authorization ✅
+### 2. Authentication And Authorization
 
-- **Cognito User Pool:** `eu-north-1_p8Tddx1DX` (secure-docs-dev-user-pool)
-- **App Client ID:** `5j4ho5dj6tqh6rk1bja5ive7rp`
-- **Authentication Flows:** ALLOW_USER_PASSWORD_AUTH, ALLOW_REFRESH_TOKEN_AUTH
-- **Username Attributes:** Email
+- **Cognito User Pool:** Deployed with email username attributes
+- **App Client:** Created for API authentication flows
+- **Authentication Flows:** Password and refresh-token flows configured for the learning environment
+- **API Authorization:** API Gateway JWT authorizer validates Cognito-issued tokens
 
-### 3. API Gateway ✅
+### 3. API Gateway
 
-- **HTTP API:** `secure-docs-api`
-- **Endpoint:** `https://ymbafxb8rf.execute-api.eu-north-1.amazonaws.com`
+- **HTTP API:** SecureDocs API Gateway deployed
+- **Endpoint:** Sanitized in public documentation
 - **JWT Authorizer:** Cognito-integrated
 - **Routes:**
-  - POST /upload-presigned (JWT protected)
-  - GET /list (JWT protected)
-  - GET /download/{id} (JWT protected)
-  - DELETE /delete/{id} (JWT protected)
+  - `POST /upload-presigned` - JWT protected
+  - `GET /list` - JWT protected
+  - `GET /download/{id}` - JWT protected
+  - `DELETE /delete/{id}` - JWT protected
 
-### 4. Lambda Functions ✅
+### 4. Lambda Functions
 
-- `lambda-upload-presigned` - Generate S3 presigned PUT URLs
-- `lambda-list-files` - Query user's files from DynamoDB
-- `lambda-download-file` - Ownership verification + presigned GET URLs
-- `lambda-delete-file` - Ownership verification + S3 deletion
-- **Runtime:** Python 3.12 on all functions
-- **Environment Variables:** BUCKET_NAME, TABLE_NAME, KMS_KEY_ARN (passed securely)
+- `lambda-upload-presigned` - generates S3 presigned PUT URLs
+- `lambda-list-files` - queries user-owned file metadata from DynamoDB
+- `lambda-download-file` - verifies ownership and generates presigned GET URLs
+- `lambda-delete-file` - verifies ownership and deletes objects
+- **Runtime:** Python 3.12
+- **Environment Variables:** Resource names and ARNs only; no plaintext credentials
 
-### 5. Database Layer ✅
+### 5. Database Layer
 
-- **DynamoDB Table:** `secure-docs-users-dev`
-- **Billing Mode:** PAY_PER_REQUEST (auto-scaling)
-- **Primary Key:** `owner_id` (partition key) + `object_key` (sort key)
-- **Enforces:** File ownership at read/write/delete operations
+- **DynamoDB Table:** SecureDocs metadata table
+- **Billing Mode:** PAY_PER_REQUEST
+- **Primary Key:** `owner_id` partition key and `object_key` sort key
+- **Ownership Boundary:** Lambda handlers use authenticated identity, not client-supplied owner IDs
 
-### 6. Audit & Compliance (v2 Layer) ✅
+### 6. Audit And Compliance Layer
 
 #### CloudTrail
 
-- **Trail Name:** `secure-docs-trail`
-- **Logging:** ✅ Active (multi-region, log file validation)
-- **S3 Integration:** Logs to `secure-docs-dev-075237969240`
-- **CloudWatch Logs:** IAM role configured for log forwarding
-- **Coverage:** Global service events + API calls in eu-north-1
+- **Trail Name:** SecureDocs CloudTrail
+- **Logging:** Active with log file validation
+- **Region Scope:** Single-region trail with global service events enabled in the current Terraform configuration
+- **S3 Integration:** Logs delivered to a private CloudTrail log bucket
+- **Coverage:** AWS API activity for the deployed environment
 
 #### AWS Config
 
 - **Recorder:** Configured for compliance tracking
-- **Delivery Channel:** Configured (state file storage)
+- **Delivery Channel:** Configured for state-file storage
 
 #### GuardDuty
 
-- **Detector:** Configured for threat detection
-- _Note: Service subscription required for active monitoring_
+- **Detector:** Configured for threat detection where supported
+- **Note:** Service subscription and finding workflows must be verified in the deployed account
 
 ## Terraform State
 
-```
-Apply Status: Success
-Last Run: 2024 (with outputs consolidation)
-Modified Files: main.tf, api-gateway.tf
-Commit: ccf625e - "consolidate terraform outputs in main.tf"
+```text
+Apply Status: verified in a development environment
+Last Validation: sanitized public example
+Resource Identifiers: intentionally omitted from this public repository
 ```
 
-## How to Query Outputs
+## How To Query Outputs
 
 ```bash
-# Get all outputs
 terraform -chdir=infra/environments/dev output
-
-# Get specific output
 terraform -chdir=infra/environments/dev output api_endpoint_url
-
-# JSON format
 terraform -chdir=infra/environments/dev output -json
 ```
+
+Do not paste live output values into public documentation.
 
 ## Security Architecture Summary
 
 **Defense in Depth:**
 
-1. **Perimeter:** S3 bucket completely isolated, no public access
-2. **Identity:** JWT tokens via Cognito (not API keys)
-3. **Data Protection:** KMS encryption with customer-managed keys
-4. **Application Logic:** Ownership verification in Lambda functions
-5. **Audit Trail:** CloudTrail + CloudWatch Logs for all API calls
-6. **Compliance:** AWS Config for infrastructure state tracking
-7. **Threat Detection:** GuardDuty for anomalous activity detection
+1. **Perimeter:** S3 bucket is private and has public access blocked.
+2. **Identity:** JWT tokens are issued through Cognito.
+3. **Data Protection:** S3 objects are encrypted with KMS.
+4. **Application Logic:** Lambda verifies file ownership before S3 access.
+5. **Audit Trail:** CloudTrail and CloudWatch Logs support investigation.
+6. **Compliance:** AWS Config tracks infrastructure state.
+7. **Threat Detection:** GuardDuty can detect anomalous account activity.
 
-**Immutability & Recovery:**
+**Immutability And Recovery:**
 
-- S3 versioning prevents accidental deletion
-- CloudTrail log file validation prevents tampering
-- Encrypted audit logs in DynamoDB and CloudWatch
+- S3 versioning protects against accidental object deletion.
+- CloudTrail log file validation supports tamper detection.
+- DynamoDB point-in-time recovery should be enabled for production use.
 
-## Next Steps for Production
+## Next Steps For Production
 
-1. [ ] Enable MFA enforcement in Cognito
-2. [ ] Set up AWS Config rules for compliance checking
-3. [ ] Configure CloudWatch alarms for suspicious API patterns
-4. [ ] Enable GuardDuty findings notifications
-5. [ ] Test disaster recovery (state backup/restore)
-6. [ ] Implement backup strategy for DynamoDB (point-in-time recovery)
-7. [ ] Document runbooks for incident response
-8. [ ] Review IAM policies with principle of least privilege
-9. [ ] Set up cross-account access (if needed)
-10. [ ] Configure DNS and TLS certificate management
+1. [ ] Enforce MFA for administrative and sensitive user actions.
+2. [ ] Add AWS Config managed rules for S3, IAM, KMS, and logging checks.
+3. [ ] Configure CloudWatch alarms for suspicious API and storage patterns.
+4. [ ] Enable GuardDuty findings notifications.
+5. [ ] Test disaster recovery and state restore.
+6. [ ] Implement DynamoDB point-in-time recovery.
+7. [ ] Document incident response runbooks.
+8. [ ] Review IAM policies with least-privilege tooling.
+9. [ ] Add cross-account access only if required.
+10. [ ] Configure DNS and certificate management for production.
 
 ---
 
-**Verified on:** February 2024  
-**Region:** eu-north-1  
-**Account ID:** 075237969240
+**Region:** `<region>`
+**Account ID:** `<account_id>`
