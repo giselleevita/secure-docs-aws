@@ -20,7 +20,7 @@ Key design choices made during the SecureDocs AWS build, with the reasoning behi
 
 **Why:** Keeps the authorization logic in one place. S3 presigned URLs are scoped to a single object and expire (default 15 minutes), so a leaked URL has a small blast radius.
 
-**Trade-off:** Lambda becomes a chokepoint; horizontal scaling must be verified under load. Accepted for simplicity at portfolio scale.
+**Trade-off:** Lambda becomes a chokepoint; horizontal scaling must be verified under load. Accepted for simplicity in the current reference architecture.
 
 ---
 

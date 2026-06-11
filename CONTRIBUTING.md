@@ -1,7 +1,7 @@
 # Contributing
 
 Thank you for contributing to SecureDocs AWS.
-This project is a learning-focused, public portfolio repo and aims to stay small, clear, and audit-friendly.
+This project is a learning-focused reference implementation and aims to stay small, clear, and audit-friendly.
 
 ## Branch Naming
 
