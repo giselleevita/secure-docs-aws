@@ -7,7 +7,7 @@ All tests use synthetic, public-safe data and no real customer data or credentia
 
 - API behavior and owner-based access control (e.g., requests for one user must not leak another's data).
 - Infrastructure verification for security controls (e.g., IAM policies, logging, network boundaries).
-- Script-based checks for portfolio validation (e.g., drift checks, pre-push checks).
+- Script-based checks for repository validation (e.g., drift checks, pre-push checks).
 
 ## How to run
 
