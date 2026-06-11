@@ -141,7 +141,7 @@ CloudTrail and CloudWatch Logs transformed the project from "something that work
 
 ---
 
-## Interview-Ready Summary
+## Architecture Summary
 
 **What This Project Is:**
 
