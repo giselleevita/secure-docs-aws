@@ -14,6 +14,14 @@ resource "aws_dynamodb_table" "users" {
     type = "S"
   }
 
+  server_side_encryption {
+    enabled = true
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+
   tags = {
     Project     = "secure-docs"
     Environment = var.environment

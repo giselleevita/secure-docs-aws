@@ -37,6 +37,22 @@ jobs:
       - name: Terraform validate
         run: terraform -chdir=infra/environments/dev validate
 
+
+      - name: Setup tflint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: tflint
+        run: |
+          cd infra
+          tflint --init
+          tflint --recursive --minimum-failure-severity=error
+
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: infra
+          additional_args: --minimum-severity HIGH
+
       - name: Secrets and hygiene check
         run: sh scripts/security/check_secrets.sh
 

@@ -114,6 +114,7 @@ resource "aws_kms_key_policy" "cloudtrail" {
 resource "aws_cloudtrail" "secure_docs" {
   name                          = "secure-docs-trail"
   s3_bucket_name                = module.storage.bucket_name
+  kms_key_id                    = module.storage.kms_key_arn
   enable_log_file_validation    = true
   include_global_service_events = true
   is_multi_region_trail         = true
