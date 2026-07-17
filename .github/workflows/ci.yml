@@ -51,6 +51,7 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: infra
+          additional_args: --minimum-severity HIGH
 
       - name: Secrets and hygiene check
         run: sh scripts/security/check_secrets.sh
