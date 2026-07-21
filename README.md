@@ -1,6 +1,20 @@
 # SecureDocs AWS
 
+[![CI](https://github.com/giselleevita/secure-docs-aws/actions/workflows/ci.yml/badge.svg)](https://github.com/giselleevita/secure-docs-aws/actions/workflows/ci.yml)
+
 _A security-focused document storage service on AWS that teaches IAM, S3, KMS, CloudTrail, and ownership-enforcement patterns._
+
+```mermaid
+flowchart LR
+  U["Client"] -->|"JWT"| APIGW["API Gateway<br/>(Cognito JWT authorizer)"]
+  APIGW --> UP["Lambda: upload"]
+  APIGW --> LS["Lambda: list"]
+  APIGW --> DL["Lambda: download"]
+  APIGW --> DEL["Lambda: delete"]
+  UP & LS & DL & DEL -->|"owner_id check"| DDB[("DynamoDB<br/>metadata")]
+  UP & DL & DEL -->|"presigned URL (5 min)"| S3[("S3<br/>private + SSE-KMS + versioned")]
+  APIGW & UP & LS & DL & DEL -->|"logs"| CT["CloudTrail + CloudWatch Logs"]
+```
 
 ## Overview
 
