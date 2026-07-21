@@ -11,14 +11,20 @@ All tests use synthetic, public-safe data and no real customer data or credentia
 
 ## How to run
 
-- Run end-to-end verification scripts from the repository root:
+Verification is manual against a deployed environment. Read the endpoint,
+Cognito pool, and bucket values from `terraform output` for the target
+environment (e.g. `infra/environments/dev`), obtain a Cognito JWT for a test
+user, then exercise the API with `curl`:
 
 ```bash
-sh scripts/verification/verify_secure_docs.sh
-sh scripts/verification/test_secure_docs.sh
-```
+# happy path — own file
+curl -H "Authorization: Bearer $JWT" "$API/files"            # 200, lists caller's files
+# denial path — another user's object
+curl -H "Authorization: Bearer $JWT" "$API/files/$OTHER_KEY" # 403
 
-- Use environment-specific values from `terraform output` for the target environment (e.g., `infra/environments/dev`).
+# repo hygiene check (no deploy needed)
+sh scripts/security/check_secrets.sh
+```
 - Confirm expected success paths and denial paths (e.g., cross-user access must return 403).
 
 ## Pass criteria
