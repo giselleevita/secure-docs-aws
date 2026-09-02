@@ -40,6 +40,23 @@ Access is split across dedicated IAM roles for upload, read, and delete operatio
 - CloudTrail and CloudWatch Logs provide audit visibility across API, Lambda, and storage activity.
 - The repository includes a testable threat model and documented security decisions in [docs/security/security-decisions.md](docs/security/security-decisions.md).
 
+## Documentation
+
+The design work behind this repository is written down rather than implied. Start wherever matches what you want to check:
+
+| Document | What it covers |
+| --- | --- |
+| [Threat model](docs/security/threat-model.md) | Assets, trust boundaries, attacker goals and the control that answers each one |
+| [Security decisions](docs/security/security-decisions.md) | Why each control was chosen, and what was deliberately left out |
+| [Validation results](docs/security/validation-results.md) | What was actually verified against deployed infrastructure, and what was not |
+| [Test plan](docs/verification/test-plan.md) | The cases used to check ownership enforcement and access boundaries |
+| [Verification runs](docs/verification/verify-v1-v2.md) | Recorded results for v1/v2, and [v3](docs/verification/verify-v3.md) |
+| [Architecture overview](docs/architecture/overview.md) | System shape, and the [decision record](docs/architecture/decisions.md) behind it |
+| [Operational runbooks](docs/operations/runbooks.md) | What to do when something breaks |
+| [IAM mistakes](docs/notes/iam-mistakes.md) | Errors made while building this, kept rather than deleted |
+
+Two of these are worth calling out. The threat model is 249 lines and enumerates attacker goals against controls rather than listing features. The validation results state what was checked against real deployed infrastructure **and what was not** — the scope limits are written down instead of left to inference.
+
 ## How to Run
 
 Configure AWS credentials with aws configure, then initialize and apply the Terraform configuration using terraform init and terraform apply. The configuration lives under infra/environments/dev.
