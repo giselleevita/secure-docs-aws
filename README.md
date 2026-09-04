@@ -63,7 +63,55 @@ Configure AWS credentials with aws configure, then initialize and apply the Terr
 
 - Prerequisites: AWS CLI and Terraform
 
+```bash
+cd infra/environments/dev
+terraform init
+terraform plan   # review before applying — this creates a VPC, WAF, GuardDuty, and Config
+terraform apply
+```
+
 After apply, the API endpoint is shown in Terraform output.
+
+### Cost
+
+The core service (API Gateway, Lambda, DynamoDB, S3) is effectively free at rest and
+at demo-level traffic — everything is pay-per-request with no idle compute, and there
+is no NAT gateway in this configuration.
+
+The security services this stack turns on are **not** pay-per-use and keep billing
+while the stack exists, independent of traffic:
+
+| Resource | Approx. idle cost | Why it's there |
+|---|---|---|
+| GuardDuty detector | ~$4–10/month for a low-volume account | Threat detection |
+| AWS Config (recorder + delivery channel) | ~$2–5/month + per-rule evaluation | Configuration compliance recording |
+| WAFv2 Web ACL + logging | ~$5/month base + per-million-request charges | API Gateway request filtering |
+
+These are rough ranges, not a quote — check the [AWS Pricing Calculator](https://calculator.aws/)
+for your account and region before leaving this deployed. None of this is expensive
+at a personal-project scale, but "leave it running for a month to review" is not free,
+unlike the core Lambda/API Gateway/DynamoDB/S3 path.
+
+### Teardown
+
+```bash
+cd infra/environments/dev
+terraform destroy
+```
+
+S3 has versioning enabled, so `terraform destroy` will fail on the bucket if it still
+holds objects or old versions — empty it first (including all versions) if you
+uploaded test files:
+
+```bash
+aws s3api list-object-versions --bucket <bucket-name> \
+  --query '{Objects: Objects[].{Key:Key,VersionId:VersionId}}' --output json \
+  | aws s3api delete-objects --bucket <bucket-name> --delete file:///dev/stdin
+```
+
+`terraform destroy` removes GuardDuty, Config, and WAF along with the application
+resources — there is nothing left billing once it completes. Confirm with
+`terraform state list` (should be empty) or a check in the AWS console.
 
 ## Why This Exists
 
