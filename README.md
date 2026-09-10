@@ -52,6 +52,7 @@ The design work behind this repository is written down rather than implied. Star
 | [Test plan](docs/verification/test-plan.md) | The cases used to check ownership enforcement and access boundaries |
 | [Verification runs](docs/verification/verify-v1-v2.md) | Recorded results for v1/v2, and [v3](docs/verification/verify-v3.md) |
 | [Offline Lambda security tests](tests/test_lambda_security.py) | CI-backed proof that JWT identity wins over client input and cross-user access is denied |
+| [Reviewer guide](docs/REVIEWER_GUIDE.md) | A free ten-minute path through the trust boundary and reproducible tests |
 | [Read-only deployed-control check](scripts/security/verify_deployed_controls.sh) | Re-run S3 encryption, versioning, and public-access checks without changing the environment |
 | [Architecture overview](docs/architecture/overview.md) | System shape, and the [decision record](docs/architecture/decisions.md) behind it |
 | [Operational runbooks](docs/operations/runbooks.md) | What to do when something breaks |
