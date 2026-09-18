@@ -6,9 +6,14 @@ on:
     branches:
       - main
 
+concurrency:
+  group: secure-docs-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -62,3 +67,6 @@ jobs:
             python -m black --check app
             python -m flake8 --max-line-length=99 app
           fi
+
+      - name: Offline Lambda security-boundary tests
+        run: python -m unittest discover -s tests -v
